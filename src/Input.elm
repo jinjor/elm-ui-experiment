@@ -1,4 +1,4 @@
-module Input exposing (Input, init, view)
+module Input exposing (Input, get, get2, init, view)
 
 import Html exposing (..)
 import Html.Attributes exposing (..)
@@ -75,3 +75,18 @@ render send options (Input model) =
             Err error ->
                 div [] [ text error ]
         ]
+
+
+get : (a -> b) -> Input a -> Maybe b
+get f (Input model) =
+    Result.map f
+        (model.validate model.value)
+        |> Result.toMaybe
+
+
+get2 : (a -> b -> c) -> Input a -> Input b -> Maybe c
+get2 f (Input model1) (Input model2) =
+    Result.map2 f
+        (model1.validate model1.value)
+        (model2.validate model2.value)
+        |> Result.toMaybe

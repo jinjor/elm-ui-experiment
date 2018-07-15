@@ -1,6 +1,7 @@
 module Main exposing (..)
 
 import Html exposing (..)
+import Html.Attributes exposing (..)
 import Input exposing (Input)
 import Table exposing (Table)
 
@@ -18,20 +19,23 @@ main =
 type alias Model =
     { table : Table
     , data : List Int
-    , input : Input Int
+    , name : Input String
+    , age : Input Int
     }
 
 
 type Msg
     = UpdateTable Table
-    | UpdateInput (Input Int)
+    | UpdateName (Input String)
+    | UpdateAge (Input Int)
 
 
 init : ( Model, Cmd Msg )
 init =
     ( { table = Table.init
       , data = [ 1, 2, 3, 4 ]
-      , input = Input.init String.toInt (toString 0)
+      , name = Input.init Ok "Bob"
+      , age = Input.init String.toInt (toString 20)
       }
     , Cmd.none
     )
@@ -45,8 +49,13 @@ update msg model =
             , Cmd.none
             )
 
-        UpdateInput input ->
-            ( { model | input = input }
+        UpdateName name ->
+            ( { model | name = name }
+            , Cmd.none
+            )
+
+        UpdateAge age ->
+            ( { model | age = age }
             , Cmd.none
             )
 
@@ -64,8 +73,17 @@ view model =
             model.table
             model.data
         , Input.view
-            { handleUpdate = UpdateInput
-            , label = "Input"
+            { handleUpdate = UpdateName
+            , label = "Name"
             }
-            model.input
+            model.name
+        , Input.view
+            { handleUpdate = UpdateAge
+            , label = "Age"
+            }
+            model.age
+        , button
+            [ disabled (Input.get2 (\_ _ -> ()) model.name model.age == Nothing)
+            ]
+            [ text "Send" ]
         ]
