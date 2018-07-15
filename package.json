@@ -1,0 +1,8 @@
+{
+  "devDependencies": {
+    "elm": "^0.18.0"
+  },
+  "scripts": {
+    "build": "elm make src/Main.elm"
+  }
+}
