@@ -1,6 +1,7 @@
 module Main exposing (..)
 
 import Html exposing (..)
+import Input exposing (Input)
 import Table exposing (Table)
 
 
@@ -17,16 +18,21 @@ main =
 type alias Model =
     { table : Table
     , data : List Int
+    , input : Input Int
     }
 
 
 type Msg
     = UpdateTable Table
+    | UpdateInput (Input Int)
 
 
 init : ( Model, Cmd Msg )
 init =
-    ( Model Table.init [ 1, 2, 3, 4 ]
+    ( { table = Table.init
+      , data = [ 1, 2, 3, 4 ]
+      , input = Input.init String.toInt (toString 0)
+      }
     , Cmd.none
     )
 
@@ -36,6 +42,11 @@ update msg model =
     case msg of
         UpdateTable table ->
             ( { model | table = table }
+            , Cmd.none
+            )
+
+        UpdateInput input ->
+            ( { model | input = input }
             , Cmd.none
             )
 
@@ -52,4 +63,9 @@ view model =
             }
             model.table
             model.data
+        , Input.view
+            { handleUpdate = UpdateInput
+            , label = "Input"
+            }
+            model.input
         ]
