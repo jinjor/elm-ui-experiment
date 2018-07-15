@@ -60,13 +60,7 @@ view options table data =
         { handleUpdate = options.handleUpdate
         , model = table
         , update = update
-        , render =
-            \send ->
-                render
-                    send
-                    options
-                    table
-                    data
+        , render = \send -> render send options table data
         }
 
 
@@ -75,7 +69,8 @@ render send options (Table model) items =
     table []
         [ thead []
             [ hr
-                [ onClick (send SwitchOrder)
+                [ onClick SwitchOrder
+                    |> Html.Attributes.map send
                 ]
                 [ th [] [ text "Item" ] ]
             ]

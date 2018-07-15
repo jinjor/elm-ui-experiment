@@ -50,12 +50,7 @@ view options input =
         { handleUpdate = options.handleUpdate
         , model = input
         , update = update
-        , render =
-            \send ->
-                render
-                    send
-                    options
-                    input
+        , render = \send -> render send options input
         }
 
 
@@ -65,7 +60,8 @@ render send options (Input model) =
         [ label [] [ text options.label ]
         , input
             [ value model.value
-            , onInput (InputValue >> send)
+            , onInput InputValue
+                |> Html.Attributes.map send
             ]
             []
         , case model.validate model.value of
