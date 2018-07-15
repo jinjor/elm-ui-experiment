@@ -2,9 +2,9 @@ module Main exposing (..)
 
 import Button
 import Html exposing (..)
-import Html.Attributes exposing (..)
 import Input exposing (Input)
 import Table exposing (Table)
+import Validation
 
 
 main : Program Never Model Msg
@@ -42,8 +42,18 @@ init : ( Model, Cmd Msg )
 init =
     ( { table = Table.init
       , data = [ 1, 2, 3, 4 ]
-      , name = Input.init Ok ""
-      , age = Input.init String.toInt (toString 0)
+      , name =
+            Input.init
+                (Validation.validate
+                    |> Validation.nonEmpty
+                )
+                "Foo"
+      , age =
+            Input.init
+                (Validation.validate
+                    |> Validation.integer
+                )
+                (toString 0)
       }
     , Cmd.none
     )
