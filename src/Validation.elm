@@ -24,7 +24,7 @@ number =
                     Ok n
 
                 Err _ ->
-                    Err "should not be a number"
+                    Err "should be a number"
 
 
 integer : Validation String -> Validation Int
@@ -36,7 +36,7 @@ integer =
                     Ok n
 
                 Err _ ->
-                    Err "should not be an integer"
+                    Err "should be an integer"
 
 
 nonEmpty : Validation String -> Validation String
@@ -55,7 +55,7 @@ maxLength threshold =
     custom <|
         \s ->
             if String.length s > threshold then
-                Err ("should be " ++ toString threshold ++ " or less charactors")
+                Err ("should be " ++ toString threshold ++ " or less characters")
 
             else
                 Ok s
