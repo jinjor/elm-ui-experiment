@@ -20,6 +20,17 @@ type Msg
     = SwitchOrder
 
 
+type Table
+    = Table Model
+
+
+init : Table
+init =
+    Table
+        { order = Asc
+        }
+
+
 update : Msg -> Table -> Table
 update msg (Table model) =
     Table <|
@@ -34,17 +45,6 @@ update msg (Table model) =
                             Desc ->
                                 Asc
                 }
-
-
-type Table
-    = Table Model
-
-
-init : Table
-init =
-    Table
-        { order = Asc
-        }
 
 
 type alias Options msg a =
