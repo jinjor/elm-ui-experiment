@@ -15,69 +15,77 @@ custom f v =
     \s -> Result.andThen f (v s)
 
 
-number : Validation String -> Validation Float
-number =
+decode : (String -> Maybe a) -> String -> Validation String -> Validation a
+decode decodeString errorMessage =
     custom <|
         \s ->
-            case String.toFloat s of
-                Ok n ->
-                    Ok n
+            case decodeString s of
+                Just a ->
+                    Ok a
 
-                Err _ ->
-                    Err "should be a number"
+                Nothing ->
+                    Err errorMessage
+
+
+checkIf : (a -> Bool) -> String -> Validation a -> Validation a
+checkIf isValid errorMessage =
+    custom <|
+        \a ->
+            if isValid a then
+                Ok a
+
+            else
+                Err errorMessage
+
+
+number : Validation String -> Validation Float
+number =
+    decode
+        (String.toFloat >> Result.toMaybe)
+        "should be a number"
 
 
 integer : Validation String -> Validation Int
 integer =
-    custom <|
-        \s ->
-            case String.toInt s of
-                Ok n ->
-                    Ok n
-
-                Err _ ->
-                    Err "should be an integer"
+    decode
+        (String.toInt >> Result.toMaybe)
+        "should be an integer"
 
 
 nonEmpty : Validation String -> Validation String
 nonEmpty =
-    custom <|
-        \s ->
-            if s == "" then
-                Err "should not be empty"
-
-            else
-                Ok s
+    checkIf
+        (\s -> s /= "")
+        "should not be empty"
 
 
 maxLength : Int -> Validation String -> Validation String
 maxLength threshold =
-    custom <|
-        \s ->
-            if String.length s > threshold then
-                Err ("should be " ++ toString threshold ++ " or less characters")
-
-            else
-                Ok s
+    checkIf
+        (\s -> String.length s <= threshold)
+        ("should be " ++ toString threshold ++ " or less characters")
 
 
 min : comparable -> Validation comparable -> Validation comparable
 min threshold =
-    custom <|
-        \n ->
-            if n >= threshold then
-                Ok n
-
-            else
-                Err ("should be " ++ toString n ++ " or more")
+    checkIf
+        (\n -> n >= threshold)
+        ("should be " ++ toString threshold ++ " or more")
 
 
 max : comparable -> Validation comparable -> Validation comparable
 max threshold =
+    checkIf
+        (\n -> n <= threshold)
+        ("should be " ++ toString threshold ++ " or less")
+
+
+optional : Validation a -> Validation String -> Validation (Maybe a)
+optional v =
     custom <|
-        \n ->
-            if n <= threshold then
-                Ok n
+        \s ->
+            if String.trim s == "" then
+                Result.map Just (v s)
 
             else
-                Err ("should be " ++ toString n ++ " or less")
+                Ok Nothing
